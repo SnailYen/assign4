@@ -16,17 +16,18 @@ float enemyY []=new float[18];
 int nbrEnemy= 8;
 float enemySpace=80;
 float enemyStartY=random(420);
-
+float flameX;
 
 boolean upPressed = false;
 boolean downPressed = false;
 boolean leftPressed = false;
 boolean rightPressed = false;
-boolean hitFighter =false;
+boolean [] hitFighter =new boolean[18];
 
 void setup () {
    
   size(640, 480) ;
+  
   for(int i=0;i<5;i++){
   flame[i] = loadImage("img/flame"+(i+1)+".png");
   }
@@ -60,6 +61,7 @@ void setup () {
   }
   for(int i=5;i<10;i++){
   enemyX[i]=(i-5)*enemySpace;  
+  flameX=enemyX[i];
   }
   for(int i=10;i<18;i++){
     if (i<15 ){
@@ -70,6 +72,7 @@ void setup () {
   }
   
   for(int i=0;i<18;i++){
+    hitFighter[i]=false;
   }
   
 
@@ -163,27 +166,32 @@ void draw() {
         
          
         for(int i =0;i<5;i++){
-          
-      
-        enemyY[i]=enemyStartY;
+        if(hitFighter[i]==false)  {
         
+        enemyX[i]+=3;
+        enemyY[i]=enemyStartY;
+        image(enemy,enemyX[i]-380,enemyY[i]);
+        }
      //hit fighter
         if(fighterX <= enemyX[i] +50-380 && fighterX >= enemyX[i] -50-380
          && fighterY <= enemyY[i] +50 && fighterY >= enemyY[i] -50){
         
          hpx-=40;
-          
-         image(flame[currentFlame],enemyX[i]-380,enemyY[i]);
-         if(frameCount % (60/10)==0){
-          currentFlame++;
-           if(currentFlame>4){currentFlame=0;}
+         hitFighter[i]=true;
+         enemyX[i]=enemyX[i]-3000;
+         flameX= enemyX[i]+3000;
          }
-         enemyX[i]=-3000;
+         
+         if(hitFighter[i]){
+          if(frameCount % (60/10)==0){
+           currentFlame++;
+           if(currentFlame>4){currentFlame=0;hitFighter[i]=false;}
+
+         image(flame[currentFlame],flameX-380,enemyY[i]);
+         }
          }
         
-        image(enemy,enemyX[i]-380,enemyY[i]); 
-        //if
-        enemyX[i]+=3;
+         
         
         if(enemyX[i]>1400){
         ATTACK_TYPE=ATTACK2;
@@ -191,24 +199,35 @@ void draw() {
         }
         
         }
+       
         break;
         
         case ATTACK2:
         for(int i =5;i<10;i++){
-          if(fighterX <= enemyX[i] +50-380 && fighterX >= enemyX[i] -50-380
+         if(hitFighter[i]==false)  {
+         image(enemy,enemyX[i]-380,enemyY[i]);
+         enemyX[i]+=3;
+         enemyY[i]=enemyStartY+30*(i-5);
+        }
+           
+        //hit fighter   
+        if(fighterX <= enemyX[i] +50-380 && fighterX >= enemyX[i] -50-380
         && fighterY <= enemyY[i] +50 && fighterY >= enemyY[i] -50){
         
-       hpx-=40;
-        if(frameCount % (24/10)==0){
+        hpx-=40;
+        hitFighter[i]=true;
+        enemyX[i]=enemyX[i]-3000;
+        flameX= enemyX[i]+3000;
+        }
+        if(hitFighter[i]){
+         if(frameCount % (60/10)==0){
           currentFlame++;
-           if(currentFlame>4){currentFlame=0;}
+          if(currentFlame>4){currentFlame=0;hitFighter[i]=false;}
          }
-         image(flame[currentFlame],enemyX[i]-380,enemyY[i]);
-       enemyX[i]=-3000;
-      }
-        enemyY[i]=enemyStartY+30*(i-5);
-        image(enemy,enemyX[i]-380,enemyY[i]);
-        enemyX[i]+=3;
+         image(flame[currentFlame],flameX-380,enemyY[i]);
+        }
+      
+        
         
         if(enemyX[i]>1400){
         ATTACK_TYPE=ATTACK3;
@@ -225,16 +244,19 @@ void draw() {
         if(fighterX <= enemyX[i] +50-380 && fighterX >= enemyX[i] -50-380
         && fighterY <= enemyY[i] +50 && fighterY >= enemyY[i] -50){
         
-         hpx-=40;
-          if(frameCount % (24/10)==0){
+        hpx-=40;
+        hitFighter[i]=true;
+        enemyX[i]=enemyX[i]-3000;
+        flameX= enemyX[i]+3000;
+        }
+         
+         if(hitFighter[i]){
+         if(frameCount % (60/10)==0){
           currentFlame++;
-           if(currentFlame>4){currentFlame=0;}
+          if(currentFlame>4){currentFlame=0;hitFighter[i]=false;}
          }
-         image(flame[currentFlame],enemyX[i]-380,enemyY[i]);
-
-       enemyX[i]=-3000;
-         continue;
-      }
+         image(flame[currentFlame],flameX-380,enemyY[i]);
+        }
           
 
          if(i<15){
@@ -313,9 +335,11 @@ void draw() {
           for(int i=0;i<5;i++){
           enemyX[i]=i*enemySpace;
           enemyY[i]=random(420);
+          hitFighter[i]=false;
           }
           for(int i=5;i<10;i++){
           enemyX[i]=(i-5)*enemySpace;  
+          hitFighter[i]=false;
           }
           for(int i=10;i<18;i++){
             if (i<15 ){
@@ -323,6 +347,7 @@ void draw() {
             }else{
             enemyX[i]=(i-14)*enemySpace;
             } 
+            hitFighter[i]=false;
           }
           
           for(int i=0;i<5;i++){
